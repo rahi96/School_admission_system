@@ -1,0 +1,39 @@
+@HostAddress = http://localhost:8080
+@studentId = 12345678901234567
+
+### 1. Create a class (admin)
+POST {{HostAddress}}/classes
+Content-Type: application/json
+
+{
+  "name": "Class 6 - Morning Shift",
+  "totalSeats": 120
+}
+
+### 2. List all classes with seat accounting
+GET {{HostAddress}}/classes
+Accept: application/json
+
+### 3. Get a single class's seat status (replace the id)
+GET {{HostAddress}}/classes/c_REPLACE_ME
+Accept: application/json
+
+### 4. Apply for a seat (hold). Returns 409 when no seats are available.
+POST {{HostAddress}}/classes/c_REPLACE_ME/holds
+X-Student-Id: {{studentId}}
+
+### 5. Get a hold's current status (replace the id)
+GET {{HostAddress}}/holds/h_REPLACE_ME
+Accept: application/json
+
+### 6. Confirm admission (pay fee). Idempotent.
+POST {{HostAddress}}/holds/h_REPLACE_ME/confirm
+X-Student-Id: {{studentId}}
+
+### 7. Cancel an application. Returns 204 on success.
+DELETE {{HostAddress}}/holds/h_REPLACE_ME
+X-Student-Id: {{studentId}}
+
+### 8. List the current student's applications
+GET {{HostAddress}}/me/holds
+X-Student-Id: {{studentId}}

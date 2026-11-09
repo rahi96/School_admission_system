@@ -1,0 +1,25 @@
+# ---- Secrets / local env ----
+.neon
+.env.local
+.env
+*.env
+appsettings.*.local.json
+
+# ---- .NET build output ----
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+*.user
+*.suo
+
+# ---- Node / React (for the frontend you'll add later) ----
+node_modules/
+dist/
+build/
+
+# ---- IDE / OS ----
+.vs/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
