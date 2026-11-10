@@ -3,31 +3,20 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const MUTE_KEY = 'school-admission.voiceMuted';
 const SPOKEN_KEY = 'school-admission.voiceSpoken';
 
-const VOICE_LANG = 'bn-BD';
+const VOICE_LANG = 'en-US';
 
 export const WELCOME_MESSAGE =
-  'স্কুল অ্যাডমিশন সিস্টেমে আপনাকে স্বাগতম। ' +
-  'শুরু করতে, পেজের উপরে আপনার সতেরো সংখ্যার রেজিস্ট্রেশন নম্বর লিখুন। ' +
-  'ক্লাসের তালিকা দেখে কোন ক্লাসে কতটি আসন খালি আছে তা জেনে নিন, ' +
-  'তারপর অ্যাপ্লাই বাটনে ক্লিক করে আপনার নামে একটি আসন হোল্ড করুন। ' +
-  'হোল্ড করা আসন নির্দিষ্ট সময়ের জন্য সংরক্ষিত থাকে, যা কাউন্টডাউনে দেখানো হয়। ' +
-  'সময় শেষ হওয়ার আগে ভর্তি ফি পরিশোধ করতে পে অ্যাডমিশন ফি বাটনে ক্লিক করুন ' +
-  'অথবা আসন ছেড়ে দিতে ক্যান্সেল বাটনে ক্লিক করুন। ' +
-  'আপনার সব আবেদন এবং তাদের অবস্থা মাই অ্যাপ্লিকেশনস অংশে দেখতে পাবেন। শুভকামনা!';
+  'Welcome to the School Admission System. ' +
+  'To get started, enter your seventeen digit registration number at the top of the page. ' +
+  'Browse the list of classes to see how many seats are available, ' +
+  'then click Apply to hold a seat in your name. ' +
+  'A held seat is reserved for a limited time, shown by a countdown. ' +
+  'Click Pay admission fee before the timer runs out to confirm your admission, ' +
+  'or click Cancel to release the seat. ' +
+  'You can see all of your applications and their status under My Applications. Good luck!';
 
 function speechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window;
-}
-
-/** Picks an installed Bengali voice, falling back to null if none is available. */
-function pickBengaliVoice(): SpeechSynthesisVoice | null {
-  if (!speechSupported()) return null;
-  const voices = window.speechSynthesis.getVoices();
-  return (
-    voices.find((v) => v.lang?.toLowerCase().startsWith('bn')) ??
-    voices.find((v) => v.lang?.toLowerCase().replace('_', '-') === VOICE_LANG) ??
-    null
-  );
 }
 
 /**
@@ -60,8 +49,6 @@ export function useVoiceGuide() {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = VOICE_LANG;
-      const bnVoice = pickBengaliVoice();
-      if (bnVoice) utterance.voice = bnVoice;
       utterance.rate = 1;
       utterance.pitch = 1;
       utterance.onend = () => setSpeaking(false);
