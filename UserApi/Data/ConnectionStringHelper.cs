@@ -32,15 +32,20 @@ public static class ConnectionStringHelper
             Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty
         };
 
-        foreach (var pair in System.Web.HttpUtility.ParseQueryString(uri.Query).AllKeys)
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var sslModeSpecified = false;
+        foreach (var pair in query.AllKeys)
         {
             if (pair is null) continue;
-            var value = System.Web.HttpUtility.ParseQueryString(uri.Query)[pair];
+            var value = query[pair];
             switch (pair.ToLowerInvariant())
             {
                 case "sslmode":
                     if (Enum.TryParse<SslMode>(value, true, out var sslMode))
+                    {
                         builder.SslMode = sslMode;
+                        sslModeSpecified = true;
+                    }
                     break;
                 case "channel_binding":
                     // Not a supported Npgsql keyword; ignore safely.
@@ -48,8 +53,10 @@ public static class ConnectionStringHelper
             }
         }
 
-        // Neon requires SSL; default to Require when not otherwise specified.
-        if (builder.SslMode == SslMode.Disable)
+        // Managed providers like Neon require SSL. Only default to Require when the
+        // URL did not specify an sslmode, so a local/Docker Postgres URL that sets
+        // e.g. sslmode=disable is still honoured.
+        if (!sslModeSpecified)
             builder.SslMode = SslMode.Require;
 
         return builder.ConnectionString;
