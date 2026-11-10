@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Container, Navbar } from 'react-bootstrap';
+import { Alert, Button, Container, Navbar } from 'react-bootstrap';
 import { api, ApiRequestError } from './api';
 import { ClassList } from './components/ClassList';
 import { CreateClass } from './components/CreateClass';
@@ -7,6 +7,7 @@ import { MyApplications } from './components/MyApplications';
 import { StudentIdBar } from './components/StudentIdBar';
 import type { ClassSummary, MyHold } from './types';
 import { useStudentId } from './useStudentId';
+import { useVoiceGuide } from './useVoiceGuide';
 
 const POLL_INTERVAL_MS = 3000;
 
@@ -17,6 +18,7 @@ export default function App() {
   const [classesLoading, setClassesLoading] = useState(true);
   const [holdsLoading, setHoldsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const voice = useVoiceGuide();
 
   // Keep the latest studentId in a ref so the polling effect doesn't restart on change.
   const studentIdRef = useRef(studentId);
@@ -80,6 +82,26 @@ export default function App() {
       <Navbar bg="dark" variant="dark" className="mb-4">
         <Container>
           <Navbar.Brand>🎓 School Admission System</Navbar.Brand>
+          {voice.supported && (
+            <div className="d-flex gap-2">
+              <Button
+                variant="outline-light"
+                size="sm"
+                onClick={voice.replay}
+                title="Play the welcome guide"
+              >
+                🔊 Guide
+              </Button>
+              <Button
+                variant={voice.muted ? 'light' : 'outline-light'}
+                size="sm"
+                onClick={voice.toggleMute}
+                title={voice.muted ? 'Unmute voice' : 'Mute voice'}
+              >
+                {voice.muted ? '🔇 Muted' : '🔈 Mute'}
+              </Button>
+            </div>
+          )}
         </Container>
       </Navbar>
 
